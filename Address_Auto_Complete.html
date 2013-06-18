@@ -1,0 +1,78 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Address UI Autocomplete </title>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+  <style>
+  .ui-autocomplete-loading {
+    background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat;
+  }
+  #city { width: 25em; }
+  </style>
+  <script>
+  $(function() {
+    function log( message ) {
+      $( "<div>" ).text( message ).prependTo( "#log" );
+      $( "#log" ).scrollTop( 0 );
+    }
+ 
+    $( "#log" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "http://ws.geonames.org/searchJSON",
+          dataType: "jsonp",
+          data: {
+            featureClass: "P",
+            style: "full",
+            maxRows: 12,
+            name_startsWith: request.term
+          },
+          success: function( data ) {
+            response( $.map( data.geonames, function( item ) {
+              return {
+                label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+                value: item.name
+              }
+            }));
+          }
+        });
+      },
+      minLength: 2,
+      select: function( event, ui ) {
+        log( ui.item ?
+          "Selected: " + ui.item.label :
+          "Nothing selected, input was " + this.value);
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    });
+  });
+  </script>
+</head>
+<body>
+ <center><i>ADDRESS AUTO COMPLETE WIDGET</i></center><br>
+<div class="ui-widget">
+  <label >Line1: </label>
+  <input class="ui-widget-content" id="log" /><br>
+  <label >Line2: </label>
+  <input class="ui-widget-content" id="log" /><br>
+  <label for="city">city: </label>
+  <input class="ui-widget-content" id="log" /><br>
+  <label >state: </label>
+  <input class="ui-widget-content" id="log" /><br>
+  <label >country: </label>
+  <input class="ui-widget-content" id="log" /><br>
+  <label >pincode: </label>
+  <input class="ui-widget-content" id="log" />
+  <br><br>
+  Powered by <a href="http://geonames.org">geonames.org</a>
+</div>
+</body>
+</html>
